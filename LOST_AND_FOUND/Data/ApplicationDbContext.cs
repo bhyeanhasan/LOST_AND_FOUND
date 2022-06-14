@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using LOST_AND_FOUND.Models;
 
 namespace LOST_AND_FOUND.Data
 {
@@ -9,5 +10,6 @@ namespace LOST_AND_FOUND.Data
             : base(options)
         {
         }
+        public DbSet<LOST_AND_FOUND.Models.User>? User { get; set; }
     }
 }
