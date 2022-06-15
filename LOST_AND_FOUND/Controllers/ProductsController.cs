@@ -10,16 +10,16 @@ using LOST_AND_FOUND.Models;
 
 namespace LOST_AND_FOUND.Controllers
 {
-    public class UsersController : Controller
+    public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public UsersController(ApplicationDbContext context)
+        public ProductsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Users
+        // GET: Products
         public async Task<IActionResult> Index()
         {
               return _context.User != null ? 
@@ -27,7 +27,7 @@ namespace LOST_AND_FOUND.Controllers
                           Problem("Entity set 'ApplicationDbContext.User'  is null.");
         }
 
-        // GET: Users/Details/5
+        // GET: Products/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null || _context.User == null)
@@ -35,40 +35,40 @@ namespace LOST_AND_FOUND.Controllers
                 return NotFound();
             }
 
-            var user = await _context.User
+            var product = await _context.User
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(product);
         }
 
-        // GET: Users/Create
+        // GET: Products/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Users/Create
+        // POST: Products/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,email")] User user)
+        public async Task<IActionResult> Create([Bind("Id,Name,Details")] Product product)
         {
             if (ModelState.IsValid)
             {
-                user.Id = Guid.NewGuid();
-                _context.Add(user);
+                product.Id = Guid.NewGuid();
+                _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(product);
         }
 
-        // GET: Users/Edit/5
+        // GET: Products/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null || _context.User == null)
@@ -76,22 +76,22 @@ namespace LOST_AND_FOUND.Controllers
                 return NotFound();
             }
 
-            var user = await _context.User.FindAsync(id);
-            if (user == null)
+            var product = await _context.User.FindAsync(id);
+            if (product == null)
             {
                 return NotFound();
             }
-            return View(user);
+            return View(product);
         }
 
-        // POST: Users/Edit/5
+        // POST: Products/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,email")] User user)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Details")] Product product)
         {
-            if (id != user.Id)
+            if (id != product.Id)
             {
                 return NotFound();
             }
@@ -100,12 +100,12 @@ namespace LOST_AND_FOUND.Controllers
             {
                 try
                 {
-                    _context.Update(user);
+                    _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Id))
+                    if (!ProductExists(product.Id))
                     {
                         return NotFound();
                     }
@@ -116,10 +116,10 @@ namespace LOST_AND_FOUND.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(product);
         }
 
-        // GET: Users/Delete/5
+        // GET: Products/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null || _context.User == null)
@@ -127,17 +127,17 @@ namespace LOST_AND_FOUND.Controllers
                 return NotFound();
             }
 
-            var user = await _context.User
+            var product = await _context.User
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(product);
         }
 
-        // POST: Users/Delete/5
+        // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -146,17 +146,17 @@ namespace LOST_AND_FOUND.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.User'  is null.");
             }
-            var user = await _context.User.FindAsync(id);
-            if (user != null)
+            var product = await _context.User.FindAsync(id);
+            if (product != null)
             {
-                _context.User.Remove(user);
+                _context.User.Remove(product);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UserExists(Guid id)
+        private bool ProductExists(Guid id)
         {
           return (_context.User?.Any(e => e.Id == id)).GetValueOrDefault();
         }
