@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LOST_AND_FOUND.Data;
 using LOST_AND_FOUND.Models;
+using System.Security.Claims;
 
 namespace LOST_AND_FOUND.Controllers
 {
@@ -56,12 +57,20 @@ namespace LOST_AND_FOUND.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Details")] Product product)
+        public async Task<IActionResult> Create( Product product)
         {
             if (ModelState.IsValid)
             {
+                var newProduct = new Product();
                 product.Id = Guid.NewGuid();
-                _context.Add(product);
+
+                newProduct.Name = product.Name;
+                newProduct.Details = product.Details;
+                newProduct.Id = product.Id;
+                var userEmail = User.FindFirstValue(ClaimTypes.Email); // will give the user's Email
+
+                newProduct.Posted_by = userEmail;
+                _context.Add(newProduct);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -89,7 +98,7 @@ namespace LOST_AND_FOUND.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Details")] Product product)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Details,Posted_by")] Product product)
         {
             if (id != product.Id)
             {
