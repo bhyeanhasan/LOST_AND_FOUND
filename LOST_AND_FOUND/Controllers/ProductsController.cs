@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using LOST_AND_FOUND.Data;
 using LOST_AND_FOUND.Models;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNet.Identity;
 
 namespace LOST_AND_FOUND.Controllers
 {
@@ -72,6 +74,8 @@ namespace LOST_AND_FOUND.Controllers
                 newProduct.Posted_by = userEmail;
                 _context.Add(newProduct);
                 await _context.SaveChangesAsync();
+
+
                 return RedirectToAction(nameof(Index));
             }
             return View(product);

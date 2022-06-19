@@ -1,4 +1,5 @@
-﻿using LOST_AND_FOUND.Models;
+﻿using LOST_AND_FOUND.Data;
+using LOST_AND_FOUND.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -7,15 +8,18 @@ namespace LOST_AND_FOUND.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly ApplicationDbContext _db;
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db)
         {
             _logger = logger;
+            _db = db;
         }
 
         public IActionResult Index()
         {
-            return View();
+            return _db.User != null ?
+                          View(_db.User.ToList()) :
+                          Problem("Entity set 'ApplicationDbContext.User'  is null.");
         }
 
         public IActionResult Privacy()
