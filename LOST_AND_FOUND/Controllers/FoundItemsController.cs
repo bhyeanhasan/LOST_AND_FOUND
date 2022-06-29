@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
-
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LOST_AND_FOUND.Data;
@@ -164,7 +163,14 @@ namespace LOST_AND_FOUND.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.FoundItem'  is null.");
             }
+
             var foundItem = await _context.FoundItem.FindAsync(id);
+            var imagePath = Path.Combine(_hostEnvironment.WebRootPath,"image",foundItem.PictureName);
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
+
             if (foundItem != null)
             {
                 _context.FoundItem.Remove(foundItem);

@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -22,11 +22,21 @@
                 <input asp-for="Details" class="form-control" />
                 <span asp-validation-for="Details" class="text-danger"></span>
             </div>
-           @* <div class="form-group">
+            <div class="form-group">
                 <label asp-for="Posted_by" class="control-label"></label>
                 <input asp-for="Posted_by" class="form-control" />
                 <span asp-validation-for="Posted_by" class="text-danger"></span>
-            </div>*@
+            </div>
+            <div class="form-group">
+                <label asp-for="postedAt" class="control-label"></label>
+                <input asp-for="postedAt" class="form-control" />
+                <span asp-validation-for="postedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductPicture" class="control-label"></label>
+                <input asp-for="ProductPicture" accept="image/*"/>
+                <span asp-validation-for="ProductPicture" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -38,6 +48,3 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

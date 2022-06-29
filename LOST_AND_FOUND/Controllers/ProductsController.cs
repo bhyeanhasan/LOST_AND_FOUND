@@ -7,18 +7,18 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LOST_AND_FOUND.Data;
 using LOST_AND_FOUND.Models;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
 
 namespace LOST_AND_FOUND.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public ProductsController(ApplicationDbContext context)
+        public ProductsController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            this._hostEnvironment = hostEnvironment;
         }
 
         // GET: Products
@@ -26,7 +26,7 @@ namespace LOST_AND_FOUND.Controllers
         {
               return _context.Product != null ? 
                           View(await _context.Product.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.User'  is null.");
+                          Problem("Entity set 'ApplicationDbContext.Product'  is null.");
         }
 
         // GET: Products/Details/5
@@ -47,27 +47,6 @@ namespace LOST_AND_FOUND.Controllers
             return View(product);
         }
 
-        // GET: Products/Details/5
-        public async Task<IActionResult> DetailsFromHome(string PostedByEmail)
-        {
-            //if (PostedByEmail == null || _context.User == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //var product = await _context.User.FirstOrDefaultAsync(m => m.Posted_by == PostedByEmail);
-
-            //var user = await UserManager.FindByEmailAsync(PostedByEmail);
-
-            //if (product == null)
-            //{
-            //    return NotFound();
-            //}
-
-            return View();
-        }
-
-
         // GET: Products/Create
         public IActionResult Create()
         {
@@ -75,28 +54,28 @@ namespace LOST_AND_FOUND.Controllers
         }
 
         // POST: Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,Details,Posted_by,postedAt,ProductPicture")] Product product)
         {
             if (ModelState.IsValid)
             {
-                var newProduct = new Product();
                 product.Id = Guid.NewGuid();
 
-                newProduct.Name = product.Name;
-                newProduct.Details = product.Details;
-                newProduct.Id = product.Id;
-                var userEmail = User.FindFirstValue(ClaimTypes.Email); // will give the user's Email
+                string rootPath = _hostEnvironment.WebRootPath;
+                string filename = Path.GetFileNameWithoutExtension(product.ProductPicture.FileName);
+                string extension = Path.GetExtension(product.ProductPicture.FileName);
+                filename = filename + DateTime.Now.ToString("yymmssfff") + extension;
+                product.PictureName = filename;
+                string path = Path.Combine(rootPath + "/image/", filename);
 
-                newProduct.Posted_by = userEmail;
-                newProduct.postedAt = DateTime.Now;
-                _context.Add(newProduct);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await product.ProductPicture.CopyToAsync(fileStream);
+                }
+
+                _context.Add(product);
                 await _context.SaveChangesAsync();
-
-
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -123,16 +102,11 @@ namespace LOST_AND_FOUND.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Details,Posted_by")] Product product)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Details,Posted_by,postedAt,PictureName")] Product product)
         {
             if (id != product.Id)
             {
                 return NotFound();
-            }
-
-            if ( product.Posted_by != User.FindFirstValue(ClaimTypes.Email))
-            {
-                return Problem("You are not the post owner");
             }
 
             if (ModelState.IsValid)
@@ -183,9 +157,18 @@ namespace LOST_AND_FOUND.Controllers
         {
             if (_context.Product == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.User'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.Product'  is null.");
             }
             var product = await _context.Product.FindAsync(id);
+
+
+            var foundItem = await _context.Product.FindAsync(id);
+            var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", product.PictureName);
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
+
             if (product != null)
             {
                 _context.Product.Remove(product);
