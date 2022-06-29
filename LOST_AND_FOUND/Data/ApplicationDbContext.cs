@@ -10,6 +10,8 @@ namespace LOST_AND_FOUND.Data
             : base(options)
         {
         }
-        public DbSet<Product>? User { get; set; }
+        public DbSet<Product>? Product { get; set; }
+        public DbSet<LOST_AND_FOUND.Models.FoundItem>? FoundItem { get; set; }
+        public DbSet<LOST_AND_FOUND.Models.LostItem>? LostItem { get; set; }
     }
 }

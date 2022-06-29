@@ -26,7 +26,7 @@
             @Html.DisplayNameFor(model => model.Posted_by)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Posted_by)
+            <a asp-controller="Home" asp-action="UserDetails" asp-route-email="@Model.Posted_by">@Html.DisplayFor(model => model.Posted_by)</a> 
         </dd>
     </dl>
 </div>

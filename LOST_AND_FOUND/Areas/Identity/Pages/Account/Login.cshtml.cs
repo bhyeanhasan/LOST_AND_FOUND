@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 
 namespace LOST_AND_FOUND.Areas.Identity.Pages.Account
 {
+    [AllowAnonymous]
     public class LoginModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;

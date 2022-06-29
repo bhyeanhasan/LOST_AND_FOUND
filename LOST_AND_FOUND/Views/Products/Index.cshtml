@@ -3,13 +3,14 @@
 @{
     ViewData["Title"] = "Index";
 }
+<div >
+<h3 class="text-center mb-2">List of L&F Products</h3>
 
-<h1>Index</h1>
-
-<p>
+<p id="upper">
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+</div>
+<table id="DivIdToPrint" class="table table-dark">
     <thead>
         <tr>
             <th>
@@ -20,6 +21,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Posted_by)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.postedAt)
             </th>
             <th></th>
         </tr>
@@ -37,6 +41,9 @@
                 @Html.DisplayFor(modelItem => item.Posted_by)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.postedAt)
+            </td>
+            <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
@@ -45,3 +52,20 @@
 }
     </tbody>
 </table>
+
+    <div id="btnhide"  style="text-align: center;margin-top: 10px;margin-bottom: 10px">
+        <input class="btn btn-block btn-success" type='button' id='btn' value='Print' onclick='printDiv();'>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"
+            integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script>
+        $("#btn").click(function () {
+            //Hide all other elements other than printarea.
+            $("#DivIdToPrint").show();
+            $("#Hide").hide();
+            $("#btnhide").hide();
+            $("#upper").hide();
+            window.print();
+        });
+    </script>

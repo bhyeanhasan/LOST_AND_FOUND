@@ -9,7 +9,6 @@ using LOST_AND_FOUND.Data;
 using LOST_AND_FOUND.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNet.Identity;
 
 namespace LOST_AND_FOUND.Controllers
 {
@@ -25,20 +24,20 @@ namespace LOST_AND_FOUND.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-              return _context.User != null ? 
-                          View(await _context.User.ToListAsync()) :
+              return _context.Product != null ? 
+                          View(await _context.Product.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.User'  is null.");
         }
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || _context.Product == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.User
+            var product = await _context.Product
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -47,6 +46,27 @@ namespace LOST_AND_FOUND.Controllers
 
             return View(product);
         }
+
+        // GET: Products/Details/5
+        public async Task<IActionResult> DetailsFromHome(string PostedByEmail)
+        {
+            //if (PostedByEmail == null || _context.User == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //var product = await _context.User.FirstOrDefaultAsync(m => m.Posted_by == PostedByEmail);
+
+            //var user = await UserManager.FindByEmailAsync(PostedByEmail);
+
+            //if (product == null)
+            //{
+            //    return NotFound();
+            //}
+
+            return View();
+        }
+
 
         // GET: Products/Create
         public IActionResult Create()
@@ -72,6 +92,7 @@ namespace LOST_AND_FOUND.Controllers
                 var userEmail = User.FindFirstValue(ClaimTypes.Email); // will give the user's Email
 
                 newProduct.Posted_by = userEmail;
+                newProduct.postedAt = DateTime.Now;
                 _context.Add(newProduct);
                 await _context.SaveChangesAsync();
 
@@ -84,12 +105,12 @@ namespace LOST_AND_FOUND.Controllers
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || _context.Product == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.User.FindAsync(id);
+            var product = await _context.Product.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -107,6 +128,11 @@ namespace LOST_AND_FOUND.Controllers
             if (id != product.Id)
             {
                 return NotFound();
+            }
+
+            if ( product.Posted_by != User.FindFirstValue(ClaimTypes.Email))
+            {
+                return Problem("You are not the post owner");
             }
 
             if (ModelState.IsValid)
@@ -135,12 +161,12 @@ namespace LOST_AND_FOUND.Controllers
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || _context.Product == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.User
+            var product = await _context.Product
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -155,14 +181,14 @@ namespace LOST_AND_FOUND.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            if (_context.User == null)
+            if (_context.Product == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.User'  is null.");
             }
-            var product = await _context.User.FindAsync(id);
+            var product = await _context.Product.FindAsync(id);
             if (product != null)
             {
-                _context.User.Remove(product);
+                _context.Product.Remove(product);
             }
             
             await _context.SaveChangesAsync();
@@ -171,7 +197,7 @@ namespace LOST_AND_FOUND.Controllers
 
         private bool ProductExists(Guid id)
         {
-          return (_context.User?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Product?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
