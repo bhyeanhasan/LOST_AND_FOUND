@@ -6,90 +6,86 @@
 
 <div class="container">
     <div class="row">
-@*
-        @foreach (var obj in Model.FoundItem)
-        {
-            <div class="col-md-4 mt-4">
-                <div class="card">
-                    <img style="height:200px;width:100%;margin:auto" src="@("~/image/"+obj.PictureName)" asp-append-version="true" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h5 style="color:red" class="card-title">@obj.Title</h5>
-                        <p class="card-text">@obj.Description</p>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">@obj.FoundBy</li>
-                    </ul>
-                    <a asp-controller="FoundItems" asp-action="Details" asp-route-id="@obj.Id">Details</a>
-
-                </div>
-            </div>
-        }
-*@
-
-
-        <section class="wrapper mb-5" >
+        <section class="wrapper mb-5">
             <div class="container-fostrap">
-
                 <div class="content">
+
                     <div class="container">
                         <div class="row">
-                            <div class="col-xs-12 col-sm-4">
-                                @foreach (var obj in Model.FoundItem)
-                                {
-                                    <div class="card">
-                                        <a class="img-card" href="http://www.fostrap.com/2016/03/bootstrap-3-carousel-fade-effect.html">
-                                            <img src="@("~/image/"+obj.PictureName)" asp-append-version="true" />
-                                        </a>
-                                        <div class="card-content">
-                                            <h4 class="card-title">
-                                                <a href="http://www.fostrap.com/2016/03/bootstrap-3-carousel-fade-effect.html">
-                                                    @obj.Title
-                                                </a>
-                                            </h4>
-                                            <p class="">
-                                                @obj.Description 
-                                            </p>
-                                        </div>
-                                        <div class="card-read-more">
-                                            <a asp-controller="FoundItems" asp-action="Details" asp-route-id="@obj.Id" class="btn btn-link btn-block">
-                                                Read More
-                                            </a>
-                                        </div>
-                                    </div>
-                                }
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <h3>Lost Items</h3>
 
-                                 @foreach (var obj in Model.LostItem)
-                                {
-                                    <div class="card">
-                                       
-                                        <div class="card-content">
-                                            <h4 class="card-title">
-                                                <a href="http://www.fostrap.com/2016/03/bootstrap-3-carousel-fade-effect.html">
-                                                    @obj.Title
+                                    @foreach (var obj in Model.FoundItem)
+                                    {
+                                        <div class="col-xs-12 col-sm-6">
+                                            <div class="card">
+                                                <a class="img-card" href="http://www.fostrap.com/2016/03/bootstrap-3-carousel-fade-effect.html">
+                                                    <img src="@("~/image/"+obj.PictureName)" asp-append-version="true" />
                                                 </a>
-                                            </h4>
-                                            <p class="">
-                                                @obj.Description 
-                                            </p>
+                                                <div class="card-content">
+                                                    <h4 class="card-title" style="max-height:300px">
+                                                        <a href="http://www.fostrap.com/2016/03/bootstrap-3-carousel-fade-effect.html">
+                                                            @obj.Title
+                                                        </a>
+                                                    </h4>
+                                                    <p class="" style="height:50px;word-wrap:break-word; overflow:hidden;margin-bottom:0px">
+                                                        @obj.Description 
+                                                    </p><span style="margin:0px">.......</span>
+                                                </div>
+                                                <div class="card-read-more">
+                                                    <a asp-controller="FoundItems" asp-action="Details" asp-route-id="@obj.Id" class="btn btn-link btn-block">
+                                                        Read More
+                                                    </a>
+                                                </div>
+                                            </div>
                                         </div>
-                                     
-                                    </div>
-                                }
+                                    }
+
+
+
+                                </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="row ">
 
+                                    @foreach (var obj in Model.FoundItem)
+                                    {
+                                        <div class="col-xs-12 col-sm-6">
+                                            <div class="card">
+                                                <a class="img-card" href="http://www.fostrap.com/2016/03/bootstrap-3-carousel-fade-effect.html">
+                                                    <img src="@("~/image/"+obj.PictureName)" asp-append-version="true" />
+                                                </a>
+                                                <div class="card-content">
+                                                    <h4 class="card-title">
+                                                        <a href="http://www.fostrap.com/2016/03/bootstrap-3-carousel-fade-effect.html">
+                                                            @obj.Title
+                                                        </a>
+                                                    </h4>
+                                                    <p class="">
+                                                        @obj.Description
+                                                    </p>
+                                                </div>
+                                                <div class="card-read-more">
+                                                    <a asp-controller="FoundItems" asp-action="Details" asp-route-id="@obj.Id" class="btn btn-link btn-block">
+                                                        Read More
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+
+
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+
                 </div>
             </div>
         </section>
-
-
-
-
-
-
-
-
     </div>
 </div>
 

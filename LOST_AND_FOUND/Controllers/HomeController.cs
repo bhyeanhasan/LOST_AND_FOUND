@@ -25,7 +25,7 @@ namespace LOST_AND_FOUND.Controllers
             dynamic mymodel = new ExpandoObject();
             mymodel.FoundItem = _db.FoundItem.ToList();
             mymodel.LostItem = _db.LostItem.ToList();
-            return _db.Product != null ?
+            return _db.FoundItem != null ?
                           View(mymodel) :
                           Problem("Entity set 'ApplicationDbContext.User'  is null.");
         }

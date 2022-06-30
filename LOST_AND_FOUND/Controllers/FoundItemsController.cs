@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using LOST_AND_FOUND.Data;
 using LOST_AND_FOUND.Models;
 using System.Security.Claims;
+using FastReport;
 
 namespace LOST_AND_FOUND.Controllers
 {
@@ -186,6 +187,35 @@ namespace LOST_AND_FOUND.Controllers
         private bool FoundItemExists(Guid id)
         {
             return (_context.FoundItem?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        public async Task<IActionResult> Generate()
+        {
+            string rootPath = _hostEnvironment.WebRootPath;
+            FastReport.Utils.Config.WebMode = true;
+            Report report = new Report();
+            string path = Path.Combine(rootPath + "/Report/Found.frx");
+            report.Load(path);
+
+            report.RegisterData(_context.FoundItem.ToList(), "FoundItemRef");
+
+            if(report.Report.Prepare())
+            {
+                FastReport.Export.PdfSimple.PDFSimpleExport pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+                pdfExport.ShiftNonExportable = false;
+                pdfExport.Subject = "Noyon";
+                pdfExport.Title = "bhyean";
+                System.IO.MemoryStream ms = new System.IO.MemoryStream();
+                report.Report.Export(pdfExport, ms);
+                report.Dispose();
+                ms.Position = 0;
+                return File(ms, "application/pdf", "repot.pdf");
+            }
+            else
+            {
+                return null;
+            }
+
         }
     }
 }
