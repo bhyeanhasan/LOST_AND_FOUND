@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LOST_AND_FOUND.Data;
 using LOST_AND_FOUND.Models;
+using System.Security.Claims;
 
 namespace LOST_AND_FOUND.Controllers
 {
@@ -26,9 +27,9 @@ namespace LOST_AND_FOUND.Controllers
         // GET: FoundItems
         public async Task<IActionResult> Index()
         {
-              return _context.FoundItem != null ? 
-                          View(await _context.FoundItem.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.FoundItem'  is null.");
+            return _context.FoundItem != null ?
+                        View(await _context.FoundItem.ToListAsync()) :
+                        Problem("Entity set 'ApplicationDbContext.FoundItem'  is null.");
         }
 
         // GET: FoundItems/Details/5
@@ -60,20 +61,22 @@ namespace LOST_AND_FOUND.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,PostTime,FoundBy,ProductPicture")] FoundItem foundItem)
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,ProductPicture")] FoundItem foundItem)
         {
             if (ModelState.IsValid)
             {
                 foundItem.Id = Guid.NewGuid();
+                foundItem.PostTime = DateTime.Now;
+                foundItem.FoundBy = User.FindFirstValue(ClaimTypes.Email);
 
                 string rootPath = _hostEnvironment.WebRootPath;
                 string filename = Path.GetFileNameWithoutExtension(foundItem.ProductPicture.FileName);
                 string extension = Path.GetExtension(foundItem.ProductPicture.FileName);
                 filename = filename + DateTime.Now.ToString("yymmssfff") + extension;
                 foundItem.PictureName = filename;
-                string path = Path.Combine(rootPath+"/image/", filename);
+                string path = Path.Combine(rootPath + "/image/", filename);
 
-                using (var fileStream = new FileStream(path,FileMode.Create))
+                using (var fileStream = new FileStream(path, FileMode.Create))
                 {
                     await foundItem.ProductPicture.CopyToAsync(fileStream);
                 }
@@ -165,7 +168,7 @@ namespace LOST_AND_FOUND.Controllers
             }
 
             var foundItem = await _context.FoundItem.FindAsync(id);
-            var imagePath = Path.Combine(_hostEnvironment.WebRootPath,"image",foundItem.PictureName);
+            var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", foundItem.PictureName);
             if (System.IO.File.Exists(imagePath))
             {
                 System.IO.File.Delete(imagePath);
@@ -175,14 +178,14 @@ namespace LOST_AND_FOUND.Controllers
             {
                 _context.FoundItem.Remove(foundItem);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool FoundItemExists(Guid id)
         {
-          return (_context.FoundItem?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.FoundItem?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

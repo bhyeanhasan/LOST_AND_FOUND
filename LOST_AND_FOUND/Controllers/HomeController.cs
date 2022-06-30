@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
+using System.Dynamic;
 
 namespace LOST_AND_FOUND.Controllers
 {
@@ -21,8 +22,11 @@ namespace LOST_AND_FOUND.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
+            dynamic mymodel = new ExpandoObject();
+            mymodel.FoundItem = _db.FoundItem.ToList();
+            mymodel.LostItem = _db.LostItem.ToList();
             return _db.Product != null ?
-                          View(_db.Product.ToList()) :
+                          View(mymodel) :
                           Problem("Entity set 'ApplicationDbContext.User'  is null.");
         }
 

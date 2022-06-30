@@ -4,6 +4,7 @@ using LOST_AND_FOUND.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LOST_AND_FOUND.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220630081249_newlost")]
+    partial class newlost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,12 +35,13 @@ namespace LOST_AND_FOUND.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FoundBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PictureName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("PostTime")
+                    b.Property<DateTime>("PostTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")

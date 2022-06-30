@@ -8,16 +8,19 @@ using Microsoft.EntityFrameworkCore;
 using LOST_AND_FOUND.Data;
 using LOST_AND_FOUND.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace LOST_AND_FOUND.Controllers
 {
     public class LostItemsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public LostItemsController(ApplicationDbContext context)
+        public LostItemsController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            this._hostEnvironment = hostEnvironment;
         }
 
         // GET: LostItems
@@ -58,11 +61,26 @@ namespace LOST_AND_FOUND.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,PostTime,LostBy")] LostItem lostItem)
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,ProductPicture")] LostItem lostItem)
         {
             if (ModelState.IsValid)
             {
                 lostItem.Id = Guid.NewGuid();
+                lostItem.PostTime = DateTime.Now;
+                lostItem.LostBy = User.FindFirstValue(ClaimTypes.Email);
+
+                string rootPath = _hostEnvironment.WebRootPath;
+                string filename = Path.GetFileNameWithoutExtension(lostItem.ProductPicture.FileName);
+                string extension = Path.GetExtension(lostItem.ProductPicture.FileName);
+                filename = filename + DateTime.Now.ToString("yymmssfff") + extension;
+                lostItem.PictureName = filename;
+                string path = Path.Combine(rootPath + "/image/", filename);
+
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await lostItem.ProductPicture.CopyToAsync(fileStream);
+                }
+
                 _context.Add(lostItem);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -149,6 +167,13 @@ namespace LOST_AND_FOUND.Controllers
                 return Problem("Entity set 'ApplicationDbContext.LostItem'  is null.");
             }
             var lostItem = await _context.LostItem.FindAsync(id);
+
+            var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", lostItem.PictureName);
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
+
             if (lostItem != null)
             {
                 _context.LostItem.Remove(lostItem);
