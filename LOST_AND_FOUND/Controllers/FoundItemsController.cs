@@ -10,6 +10,7 @@ using LOST_AND_FOUND.Data;
 using LOST_AND_FOUND.Models;
 using System.Security.Claims;
 using FastReport;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LOST_AND_FOUND.Controllers
 {
@@ -25,7 +26,6 @@ namespace LOST_AND_FOUND.Controllers
             this._hostEnvironment = hostEnvironment;
         }
 
-        // GET: FoundItems
         public async Task<IActionResult> Index()
         {
             return _context.FoundItem != null ?
@@ -33,7 +33,6 @@ namespace LOST_AND_FOUND.Controllers
                         Problem("Entity set 'ApplicationDbContext.FoundItem'  is null.");
         }
 
-        // GET: FoundItems/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null || _context.FoundItem == null)
@@ -50,16 +49,13 @@ namespace LOST_AND_FOUND.Controllers
 
             return View(foundItem);
         }
-
-        // GET: FoundItems/Create
+        [Authorize]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: FoundItems/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,ProductPicture")] FoundItem foundItem)
@@ -89,7 +85,7 @@ namespace LOST_AND_FOUND.Controllers
             return View(foundItem);
         }
 
-        // GET: FoundItems/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null || _context.FoundItem == null)
@@ -97,7 +93,16 @@ namespace LOST_AND_FOUND.Controllers
                 return NotFound();
             }
 
+
             var foundItem = await _context.FoundItem.FindAsync(id);
+
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+
+            if(userEmail != foundItem.FoundBy)
+            {
+                return RedirectToAction("NoAcess", "Home");
+            }
+
             if (foundItem == null)
             {
                 return NotFound();
@@ -105,17 +110,25 @@ namespace LOST_AND_FOUND.Controllers
             return View(foundItem);
         }
 
-        // POST: FoundItems/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,Description,PostTime,FoundBy")] FoundItem foundItem)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,Description")] FoundItem foundItem)
         {
             if (id != foundItem.Id)
             {
                 return NotFound();
             }
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+
+            var foundData = await _context.FoundItem
+               .FirstOrDefaultAsync(m => m.FoundBy == userEmail);
+
+            foundItem.PostTime = DateTime.Now;
+            foundItem.PictureName = foundData.PictureName;
+            foundItem.FoundBy = foundData.FoundBy;
+
+
 
             if (ModelState.IsValid)
             {
@@ -140,7 +153,7 @@ namespace LOST_AND_FOUND.Controllers
             return View(foundItem);
         }
 
-        // GET: FoundItems/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null || _context.FoundItem == null)
@@ -150,6 +163,14 @@ namespace LOST_AND_FOUND.Controllers
 
             var foundItem = await _context.FoundItem
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+
+            if (userEmail != foundItem.FoundBy)
+            {
+                return RedirectToAction("NoAcess", "Home");
+            }
+
             if (foundItem == null)
             {
                 return NotFound();
@@ -158,7 +179,7 @@ namespace LOST_AND_FOUND.Controllers
             return View(foundItem);
         }
 
-        // POST: FoundItems/Delete/5
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -169,6 +190,13 @@ namespace LOST_AND_FOUND.Controllers
             }
 
             var foundItem = await _context.FoundItem.FindAsync(id);
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+
+            if (userEmail != foundItem.FoundBy)
+            {
+                return RedirectToAction("NoAcess", "Home");
+            }
+
             var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", foundItem.PictureName);
             if (System.IO.File.Exists(imagePath))
             {
@@ -196,10 +224,30 @@ namespace LOST_AND_FOUND.Controllers
             Report report = new Report();
             string path = Path.Combine(rootPath + "/Report/Found.frx");
             report.Load(path);
+            var foundItems = new List<FoundItemReportModel>();
+            await _context.FoundItem.ForEachAsync(p =>
+            {
+                var item = new FoundItemReportModel
+                {
+                    Id = p.Id,
+                    Description = p.Description,
+                    FoundBy = p.FoundBy,
+                    PostTime = p.PostTime,
+                    Title = p.Title,
+                };
 
-            report.RegisterData(_context.FoundItem.ToList(), "FoundItemRef");
+                var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", p.PictureName);
+                if (System.IO.File.Exists(imagePath))
+                {
+                    item.PictureName = System.IO.File.ReadAllBytes(imagePath);
+                }
+                foundItems.Add(item);
+            }
+            );
+            report.RegisterData(foundItems, "FoundItemRef");
 
-            if(report.Report.Prepare())
+
+            if (report.Report.Prepare())
             {
                 FastReport.Export.PdfSimple.PDFSimpleExport pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
                 pdfExport.ShiftNonExportable = false;

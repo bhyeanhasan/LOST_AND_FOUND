@@ -14,7 +14,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="row">
-                                    <h3>Lost Items</h3>
+                                    <h3>Found Items</h3>
 
                                     @foreach (var obj in Model.FoundItem)
                                     {
@@ -29,9 +29,9 @@
                                                             @obj.Title
                                                         </a>
                                                     </h4>
-                                                    <p class="" style="height:50px;word-wrap:break-word; overflow:hidden;margin-bottom:0px">
+                                                    <h6 class="" style="height:60px;word-wrap:break-word; overflow:hidden;margin-bottom:0px">
                                                         @obj.Description 
-                                                    </p><span style="margin:0px">.......</span>
+                                                    </h6><span style="margin:0px">....... </span><span style="text-align:right">@obj.PostTime</span>
                                                 </div>
                                                 <div class="card-read-more">
                                                     <a asp-controller="FoundItems" asp-action="Details" asp-route-id="@obj.Id" class="btn btn-link btn-block">
@@ -42,14 +42,12 @@
                                         </div>
                                     }
 
-
-
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="row ">
-
-                                    @foreach (var obj in Model.FoundItem)
+                                     <h3>Lost Items</h3>
+                                    @foreach (var obj in Model.LostItem)
                                     {
                                         <div class="col-xs-12 col-sm-6">
                                             <div class="card">
@@ -57,24 +55,23 @@
                                                     <img src="@("~/image/"+obj.PictureName)" asp-append-version="true" />
                                                 </a>
                                                 <div class="card-content">
-                                                    <h4 class="card-title">
+                                                    <h4 class="card-title" style="max-height:300px">
                                                         <a href="http://www.fostrap.com/2016/03/bootstrap-3-carousel-fade-effect.html">
                                                             @obj.Title
                                                         </a>
                                                     </h4>
-                                                    <p class="">
-                                                        @obj.Description
-                                                    </p>
+                                                    <h6 class="" style="height:60px;word-wrap:break-word; overflow:hidden;margin-bottom:0px">
+                                                        @obj.Description 
+                                                    </h6><span style="margin:0px">....... </span><span style="text-align:right">@obj.PostTime</span>
                                                 </div>
                                                 <div class="card-read-more">
-                                                    <a asp-controller="FoundItems" asp-action="Details" asp-route-id="@obj.Id" class="btn btn-link btn-block">
+                                                    <a asp-controller="LostItems" asp-action="Details" asp-route-id="@obj.Id" class="btn btn-link btn-block">
                                                         Read More
                                                     </a>
                                                 </div>
                                             </div>
                                         </div>
                                     }
-
 
 
                                 </div>

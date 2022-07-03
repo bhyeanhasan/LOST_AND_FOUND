@@ -35,6 +35,11 @@ namespace LOST_AND_FOUND.Controllers
             return View();
         }
 
+        public IActionResult NoAcess()
+        {
+            return View();
+        }
+
         public async Task<IActionResult> UserDetails(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);

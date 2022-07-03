@@ -97,6 +97,13 @@ namespace LOST_AND_FOUND.Controllers
             }
 
             var lostItem = await _context.LostItem.FindAsync(id);
+
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+
+            if (userEmail != lostItem.LostBy)
+            {
+                return RedirectToAction("NoAcess", "Home");
+            }
             if (lostItem == null)
             {
                 return NotFound();
@@ -109,12 +116,19 @@ namespace LOST_AND_FOUND.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,Description,PostTime,LostBy")] LostItem lostItem)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,Description")] LostItem lostItem)
         {
             if (id != lostItem.Id)
             {
                 return NotFound();
             }
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            var lostData = await _context.LostItem
+               .FirstOrDefaultAsync(m => m.LostBy == userEmail);
+
+            lostItem.PostTime = DateTime.Now;
+            lostItem.PictureName = lostData.PictureName;
+            lostItem.LostBy = lostData.LostBy;
 
             if (ModelState.IsValid)
             {

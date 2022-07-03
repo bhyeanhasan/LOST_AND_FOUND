@@ -29,7 +29,7 @@
                     <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-link">Send verification email</button>
                 </div>
             }
-            <div class="form-floating">
+            <div class="form-floating mt-2 mb-2">
                 <input asp-for="Input.NewEmail" class="form-control" autocomplete="email" aria-required="true" />
                 <label asp-for="Input.NewEmail" class="form-label"></label>
                 <span asp-validation-for="Input.NewEmail" class="text-danger"></span>

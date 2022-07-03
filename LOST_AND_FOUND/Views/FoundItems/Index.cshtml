@@ -4,48 +4,52 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1 class="text-center">প্রাপ্তি সংবাদ</h1><hr />
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-primary" asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table class="table table-warning table-striped">
     <thead>
         <tr>
-            <th>
+             <th class="text-center">
+                Picture
+            </th>
+            <th class="text-center">
                 @Html.DisplayNameFor(model => model.Title)
             </th>
-            <th>
+            <th class="text-center">
                 @Html.DisplayNameFor(model => model.Description)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PostTime)
+             <th class="text-center">
+               Found By
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FoundBy)
-            </th>
-            <th></th>
+         
+            <th class="text-center">Action</th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
+             <td class="text-center" >
+                 <img style="height:100px;width:100px;border-radius:10px" src="@("~/image/"+ item.PictureName)" asp-append-version="true" />
+            </td> 
+            <td style="width:20%">
+                <h5>@Html.DisplayFor(modelItem => item.Title)</h5>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PostTime)
+
+             <td>
+             <a class="btn btn-info" asp-controller="Home" asp-action="UserDetails" asp-route-email="@item.FoundBy">@item.FoundBy</a>
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FoundBy)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+       
+         
+            <td class="text-center">
+                <a class="btn btn-primary" style="width:100px" asp-action="Edit" asp-route-id="@item.Id">Edit</a> <br>
+                <a class="btn btn-info mt-1" style="width:100px" asp-action="Details" asp-route-id="@item.Id">Details</a> <br>
+                <a class="btn btn-danger mt-1" style="width:100px" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }

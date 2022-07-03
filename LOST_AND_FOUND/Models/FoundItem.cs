@@ -11,6 +11,6 @@ namespace LOST_AND_FOUND.Models
         public string? FoundBy { get; set; }
         public string? PictureName { get; set; }
         [NotMapped]
-        public IFormFile ProductPicture { get; set; }
+        public IFormFile? ProductPicture { get; set; }
     }
 }

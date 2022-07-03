@@ -4,45 +4,32 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
 
 <div>
-    <h4>FoundItem</h4>
+    <div class="text-center">
+        <h2>@Model.Title</h2>
+    </div>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PostTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PostTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FoundBy)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FoundBy)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProductPicture)
-        </dt>
-        <dd class = "col-sm-10">
-            <img src="@("~/image/"+Model.PictureName)" asp-append-version="true" />
-        </dd>
-    </dl>
+    <div class="row">
+        <div class="col-md-6">
+            <h6>Posted at @Model.PostTime</h6>
+        </div>
+         <div class="col-md-6 text-lg-end">
+             <span>Found by </span><a class="btn btn-info" asp-controller="Home" asp-action="UserDetails" asp-route-email="@Model.FoundBy">@Html.DisplayFor(model => model.FoundBy)</a>
+        </div>
+        <div class="col-md-12 text-center">
+            <img style="height:400px;border-radius:10px" src="@("~/image/"+Model.PictureName)" asp-append-version="true" />
+        </div>
+         <div class="col-md-2"></div>
+         <div class="col-md-8 text-center mt-3">
+            <h5>@Model.Description</h5>
+        </div>
+         <div class="col-md-2"></div>
+        
+    </div>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
+    <div class="mb-5"></div>
 </div>
